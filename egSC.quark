@@ -1,0 +1,10 @@
+(
+	name: "egSC",
+	summary: "Tools and UGens for live performance by Egregious",
+	author: "Luke Nihlen",
+	version: "0.0.1",
+	license: "GPL",
+	copyright: "Luke Nihlen 2019",
+	organization: "Egregious",
+	since: 2019
+)
