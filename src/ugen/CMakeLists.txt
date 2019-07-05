@@ -23,6 +23,7 @@ set(egSCUGen_test_files
 )
 
 add_executable(test_ugen ${egSCUGen_test_files})
+target_include_directories(test_ugen PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(test_ugen PRIVATE ${DOCTEST_INCLUDE_DIR})
 target_link_libraries(test_ugen doctest)
 

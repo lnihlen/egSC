@@ -21,12 +21,12 @@ void SharpFineRKNG8(const ODE& f, const double h, const double x, const double y
     constexpr double a_54 = 1.0 / 9.0;
 
     constexpr double a_61 = 13198826.0 / 54140625.0;
-    constexpr double a_62 = -5602364.0 / 10828215.0;
+    constexpr double a_62 = -5602364.0 / 10828125.0;
     constexpr double a_63 = 278987101.0 / 44687500.0;
     constexpr double a_64 = -332539.0 / 4021872.0;
     constexpr double a_65 = 1.0 / 20.0;
 
-    constexpr double a_71 = -601416947.0 / 16216200.0;
+    constexpr double a_71 = -601416947.0 / 162162000.0;
     constexpr double a_72 = 2972539.0 / 810810.0;
     constexpr double a_73 = 10883471.0 / 2574000.0;
     constexpr double a_74 = -503477.0 / 99000.0;
@@ -89,14 +89,14 @@ void SharpFineRKNG8(const ODE& f, const double h, const double x, const double y
     constexpr double bPrime_2 = 0.0;
     constexpr double bPrime_3 = 111537.0 / 378560.0;
     constexpr double bPrime_4 = 16807.0 / 101400.0;
-    constexpr double bPrime_5 = 297.0 / 600.0;
+    constexpr double bPrime_5 = 297.0 / 1600.0;
     constexpr double bPrime_6 = 6875.0 / 32448.0;
     constexpr double bPrime_7 = -319.0 / 840.0;
     constexpr double bPrime_8 = 9.0 / 20.0;
 
     constexpr double bHat_1 = 22151.0 / 202500.0;
     constexpr double bHat_2 = 0.0;
-    constexpr double bHat_3 = 64521 / 910000.0;
+    constexpr double bHat_3 = 64521.0 / 910000.0;
     constexpr double bHat_4 = 8536927.0 / 26325000.0;
     constexpr double bHat_5 = -16429.0 / 150000.0;
     constexpr double bHat_6 = 1.0 / 10.0;
@@ -123,7 +123,8 @@ void SharpFineRKNG8(const ODE& f, const double h, const double x, const double y
 
     double h2 = h * h;
 
-    double f_1 = f(x + (h * c_1), y + (h * c_1 * yPrime), yPrime);
+    // double f_1 = f(x + (h * c_1), y + (h * c_1 * yPrime), yPrime);
+    double f_1 = f(x, y, yPrime);
     double f_2 = f(x + (h * c_2), y + (h * c_2 * yPrime) + (h2 * (a_21 * f_1)), yPrime + (h * (aPrime_21 * f_1)));
     double f_3 = f(x + (h * c_3), y + (h * c_3 * yPrime) + (h2 * ((a_31 * f_1) + (a_32 * f_2))), yPrime + (h *
         ((aPrime_31 * f_1) + (aPrime_32 * f_2))));

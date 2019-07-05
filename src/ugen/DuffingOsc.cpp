@@ -74,7 +74,7 @@ void DuffingOsc_next(DuffingOsc* unit, int numSamples) {
     for (auto i = 0; i < numSamples; ++i) {
         out[i] = static_cast<float>(y);
 
-        egSC::SharpFineRKNG8(f, h, x, y, yPrime, yNext, yPrimeNext, yHat, yHatPrime);
+        egSC::SharpFineRKNG8<DuffingFunctor>(f, h, x, y, yPrime, yNext, yPrimeNext, yHat, yHatPrime);
 
         x += h;
         y = yNext;
