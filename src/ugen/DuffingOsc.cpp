@@ -1,7 +1,7 @@
 // Duffing Oscillator implementation, after:
 // <ref>
 
-#include "SharpFineRKNG8.h"
+#include "SharpFineRKNG8.hpp"
 
 #include "SC_PlugIn.h"
 
@@ -20,7 +20,7 @@ struct DuffingFunctor {
     }
 
     double operator()(double x, double y, double yPrime) const {
-        return (m_Damping * yPrime) + (m_Stiffness * y) + (m_nonLinearity * y * y * y) - (m_Amp * cos(2.0 * M_PI *
+        return (m_Damping * yPrime) + (m_Stiffness * y) + (m_NonLinearity * y * y * y) - (m_Amp * cos(2.0 * M_PI *
             m_Freq * x));
     }
 
@@ -46,7 +46,7 @@ extern "C" {
 }
 
 void load(InterfaceTable* table) {
-    ft = inTable;
+    ft = table;
     DefineSimpleUnit(DuffingOsc);
 }
 
@@ -65,7 +65,7 @@ void DuffingOsc_next(DuffingOsc* unit, int numSamples) {
     DuffingFunctor f(static_cast<double>(IN0(0)), static_cast<double>(IN0(1)), static_cast<double>(IN0(2)),
         static_cast<double>(IN0(3)), static_cast<double>(IN0(4)));
 
-    double h = unit->h;
+    double h = SAMPLEDUR;
     double x = unit->x;
     double y = unit->y;
     double yPrime = unit->yPrime;
@@ -74,7 +74,7 @@ void DuffingOsc_next(DuffingOsc* unit, int numSamples) {
     for (auto i = 0; i < numSamples; ++i) {
         out[i] = static_cast<float>(y);
 
-        SharpFineRKNG8(f, h, x, y, yPrime, yNext, yPrimeNext, yHat, yHatPrime);
+        egSC::SharpFineRKNG8(f, h, x, y, yPrime, yNext, yPrimeNext, yHat, yHatPrime);
 
         x += h;
         y = yNext;

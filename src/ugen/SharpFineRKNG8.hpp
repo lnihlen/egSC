@@ -124,13 +124,13 @@ void SharpFineRKNG8(const ODE& f, const double h, const double x, const double y
     double h2 = h * h;
 
     double f_1 = f(x + (h * c_1), y + (h * c_1 * yPrime), yPrime);
-    double f_2 = f(x + (h * c_2), y + (h * c_2 * yPrime) + (h2 * (a_21 * f_1)), yPrime + (h * (aPrime_21 * f1)));
+    double f_2 = f(x + (h * c_2), y + (h * c_2 * yPrime) + (h2 * (a_21 * f_1)), yPrime + (h * (aPrime_21 * f_1)));
     double f_3 = f(x + (h * c_3), y + (h * c_3 * yPrime) + (h2 * ((a_31 * f_1) + (a_32 * f_2))), yPrime + (h *
         ((aPrime_31 * f_1) + (aPrime_32 * f_2))));
     double f_4 = f(x + (h * c_4), y + (h * c_4 * yPrime) + (h2 * ((a_41 * f_1) + (a_42 * f_2) + (a_43 * f_3))),
         yPrime + (h * ((aPrime_41 * f_1) + (aPrime_42 * f_2) + (aPrime_43 * f_3))));
     double f_5 = f(x + (h * c_5), y + (h * c_5 * yPrime) + (h2 * ((a_51 * f_1) + (a_52 * f_2) + (a_53 * f_3) + (a_54
-        * f_4))), yPrime + (h * ((aPrime_51 * f_1) + (aPrime_52 * f_2) + (aPrime_53 * f3) + (aPrime_54 * f4))));
+        * f_4))), yPrime + (h * ((aPrime_51 * f_1) + (aPrime_52 * f_2) + (aPrime_53 * f_3) + (aPrime_54 * f_4))));
     double f_6 = f(x + (h * c_6), y + (h * c_6 * yPrime) + (h2 * ((a_61 * f_1) + (a_62 * f_2) + (a_63 * f_3) + (a_64
         * f_4) + (a_65 * f_5))), yPrime + (h * ((aPrime_61 * f_1) + (aPrime_62 * f_2) + (aPrime_63 * f_3) + (aPrime_64 *
         f_4) + (aPrime_65 * f_5))));
