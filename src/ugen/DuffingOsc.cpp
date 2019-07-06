@@ -39,26 +39,6 @@ struct DuffingOsc : public Unit {
     double y, yPrime;
 };
 
-extern "C" {
-    void load(InterfaceTable* table);
-    void DuffingOsc_Ctor(DuffingOsc* unit);
-    void DuffingOsc_next(DuffingOsc* unit, int numSamples);
-}
-
-void load(InterfaceTable* table) {
-    ft = table;
-    DefineSimpleUnit(DuffingOsc);
-}
-
-void DuffingOsc_Ctor(DuffingOsc* unit) {
-    unit->x = 0.0;
-    unit->y = 0.0;
-    unit->yPrime = 0.0;
-
-    SETCALC(DuffingOsc_next);
-    DuffingOsc_next(unit, 1);
-}
-
 void DuffingOsc_next(DuffingOsc* unit, int numSamples) {
     float* out = OUT(0);
 
@@ -84,5 +64,19 @@ void DuffingOsc_next(DuffingOsc* unit, int numSamples) {
     unit->x = x;
     unit->y = y;
     unit->yPrime = yPrime;
+}
+
+void DuffingOsc_Ctor(DuffingOsc* unit) {
+    unit->x = 0.0;
+    unit->y = 0.0;
+    unit->yPrime = 0.0;
+
+    SETCALC(DuffingOsc_next);
+    DuffingOsc_next(unit, 1);
+}
+
+PluginLoad(DuffingOsc) {
+    ft = inTable;
+    DefineSimpleUnit(DuffingOsc);
 }
 

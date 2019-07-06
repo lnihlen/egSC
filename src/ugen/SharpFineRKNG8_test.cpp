@@ -294,7 +294,6 @@ TEST_CASE("SharpFineRKNG8 with van der Pol second-order nonlinear ODE") {
     double yPrime = kVanDerPolTestData[2];
     double h = kVanDerPolTestData[3] - x;
     double yNext, yPrimeNext, yHat, yHatPrime;
-        REQUIRE_GT(h, 0.0);
 
     for (auto i = 1; i < kVanDerPolTestDataCount - 1; ++i) {
         REQUIRE_GT(h, 0.0);
@@ -320,3 +319,4 @@ TEST_CASE("SharpFineRKNG8 with van der Pol second-order nonlinear ODE") {
         yPrime = kVanDerPolTestData[(i * 3) + 2];
     }
 }
+
