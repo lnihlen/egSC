@@ -1,0 +1,42 @@
+TITLE:: DuffingOsc
+summary:: Chaotic driven oscillator based on the Duffing function.
+categories:: UGens>Generators>Chaotic
+
+DESCRIPTION::
+A chaotic oscillating sound generator based on the Duffing function:
+
+code::
+d2y/dt2 = amp * cos(omega * t) - (damping * dy/dt) - (stiffness * y) - (nonLinearity * y * y * y)
+::
+
+CLASSMETHODS::
+
+METHOD:: ar
+(describe method here)
+
+ARGUMENT:: freq
+(describe argument here)
+
+ARGUMENT:: damping
+(describe argument here)
+
+ARGUMENT:: stiffness
+(describe argument here)
+
+ARGUMENT:: nonLinearity
+(describe argument here)
+
+ARGUMENT:: reset
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+INSTANCEMETHODS::
+
+
+EXAMPLES::
+
+code::
+(some example code)
+::
