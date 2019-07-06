@@ -3,40 +3,49 @@ summary:: Chaotic driven oscillator based on the Duffing function.
 categories:: UGens>Generators>Chaotic
 
 DESCRIPTION::
-A chaotic oscillating sound generator based on the Duffing function:
+A chaotic oscillating sound generator based on integration of the Duffing function:
 
 code::
 d2y/dt2 = amp * cos(omega * t) - (damping * dy/dt) - (stiffness * y) - (nonLinearity * y * y * y)
 ::
 
+The amplitude adjustment is calculated automatically at reset time based on the other input frequencies to produce a peak-to-peak steady state amplitude of 1.0, assuming constant frequency.
+
+Because the oscillator is chaotic a more computationally expensive numeric method is implemented to simulate it, see "Sharp, P.W. and J.M. Fine, Some Nystrom pairs for the general second-order initial-value problem, Journal of Computational and Applied Mathematics 42 (1992) 279-291". But there are still cases where the oscillator will produce non-numeric results, in which case it will reset automatically, potentially resulting in an audible pop.
+
+note::
+DuffingOsc is unstable and emphasis::will:: produce values with absolute value > 1, and can have signficant DC bias. If directly driving a speaker with DuffingOSC consider using both LeakDC and a Limiter.
+::
+
+
 CLASSMETHODS::
 
 METHOD:: ar
-(describe method here)
+All inputs to DuffingOsc are sampled at control rate.
 
 ARGUMENT:: freq
-(describe argument here)
+Frequency of driving oscillator in Hz.
 
 ARGUMENT:: damping
-(describe argument here)
+Amount of resistance to velociy in the spring.
 
 ARGUMENT:: stiffness
-(describe argument here)
+How much force the spring responds to with linear compression.
 
 ARGUMENT:: nonLinearity
-(describe argument here)
+The degree of nonlinearity in the spring response. Larger numbers indicate higher nonlinearity, and 0 makes a purely linear spring.
 
 ARGUMENT:: reset
-(describe argument here)
-
-returns:: (describe returnvalue here)
-
-
-INSTANCEMETHODS::
-
+A trigger argument, for nonzero values at control rate the UGen will reset the simulation.
 
 EXAMPLES::
 
 code::
-(some example code)
+
+(
+{
+	Limiter.ar(LeakDC.ar(DuffingOsc.ar(440 + LFTri.kr(0.1, mul: 50))));
+}.play;
+)
+
 ::
