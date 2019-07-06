@@ -112,7 +112,7 @@ void SharpFineRKNG8(const ODE& f, const double h, const double x, const double y
     constexpr double bHatPrime_7 = 1.0 / 20.0;
     constexpr double bHatPrime_8 = 0.0;
 
-    constexpr double c_1 = 1.0;
+    constexpr double c_1 = 1.0;  // unused
     constexpr double c_2 = 1.0 / 10.0;
     constexpr double c_3 = 2.0 / 9.0;
     constexpr double c_4 = 3.0 / 7.0;
@@ -123,7 +123,6 @@ void SharpFineRKNG8(const ODE& f, const double h, const double x, const double y
 
     double h2 = h * h;
 
-    // double f_1 = f(x + (h * c_1), y + (h * c_1 * yPrime), yPrime);
     double f_1 = f(x, y, yPrime);
     double f_2 = f(x + (h * c_2), y + (h * c_2 * yPrime) + (h2 * (a_21 * f_1)), yPrime + (h * (aPrime_21 * f_1)));
     double f_3 = f(x + (h * c_3), y + (h * c_3 * yPrime) + (h2 * ((a_31 * f_1) + (a_32 * f_2))), yPrime + (h *
