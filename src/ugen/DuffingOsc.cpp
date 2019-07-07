@@ -55,11 +55,11 @@ static void DuffingOsc_next(DuffingOsc* unit, int inNumSamples);
 static void DuffingOsc_Ctor(DuffingOsc* unit);
 
 void ResetIntegration(DuffingOsc* unit) {
+    constexpr double stableAmpSquared = 0.5 * 0.5;
+
     unit->x = 0.0;
     unit->y = 0.0;
     unit->yPrime = 0.0;
-
-    constexpr double stableAmpSquared = 0.5 * 0.5;
 
     double freq = static_cast<double>(IN0(0));
     double damping = static_cast<double>(IN0(1));
@@ -81,8 +81,6 @@ void DuffingOsc_Ctor(DuffingOsc* unit) {
 
 void DuffingOsc_next(DuffingOsc* unit, int inNumSamples) {
     float* out = OUT(0);
-
-    constexpr double stableAmpSquared = 0.5 * 0.5;
 
     // Check for reset trigger and reset as needed.
     if (IN0(4) != 0.0f) {

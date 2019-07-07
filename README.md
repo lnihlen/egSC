@@ -1,4 +1,5 @@
 # egSC
+
 SuperCollider Quark with tools and UGens for Egregious live performance.
 
 This Quark can be checked out like any Quark in SuperCollider, as:

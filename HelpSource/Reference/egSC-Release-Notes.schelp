@@ -1,0 +1,9 @@
+title:: egSC Release Notes
+summary:: Reference and history for released versions of egSC.
+categories:: Quarks>egSC
+
+section:: Release Notes
+
+section:: 0.0.1 - 6 July 2019
+
+First trial release of egSC. Contains an early version of link::Classes/DuffingOsc:: UGen, although the automatic gain calculation needs work.
