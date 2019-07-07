@@ -17,28 +17,30 @@
 static InterfaceTable* ft;
 
 struct DuffingFunctor {
-    DuffingFunctor(double freq, double amp, double damping, double stiffness, double nonLinearity) :
-            m_Freq(freq),
-            m_Amp(amp),
+    DuffingFunctor(double freq, double damping, double stiffness, double nonLinearity) :
+            m_Omega(2.0 * M_PI * (freq / 100000.0)),
             m_Damping(damping),
             m_Stiffness(stiffness),
             m_NonLinearity(nonLinearity) {
     }
 
+    // The 0.3 multiplier on the cos driver comes from an analysis of the steady-state amplitude function of the
+    // Duffing equation provided in the Wikipedia page. Assuming a max frequency of 0.25, and all other inputs in
+    // reasonable ranges, and keeping the desired steady-state amplitude at 0.5 results in a range of values for
+    // the amplitude at right around 0.3.
     double operator()(double x, double y, double yPrime) const {
-        return (m_Amp * cos(2.0 * M_PI * m_Freq * x)) - (m_Damping * yPrime) - (m_Stiffness * y) - (m_NonLinearity * y *
-            y * y);
+        return (0.3 * cos(m_Omega * x)) - (m_Damping * yPrime) - (m_Stiffness * y) - (m_NonLinearity * y * y * y);
     }
 
-    double m_Freq;
-    double m_Amp;
+    double m_Omega;
     double m_Damping;
     double m_Stiffness;
     double m_NonLinearity;
 };
 
 struct DuffingOsc : public Unit {
-    // Integrator step size, currently constant at sample duration.
+    // Integrator step size, kept so that sampling the oscillator at audio frequencies doesn't require huge adjustments
+    // to the gain across the audio range.
     double h;
 
     // Tracks time for the driving oscillator.
@@ -46,34 +48,20 @@ struct DuffingOsc : public Unit {
 
     // Displacement at time t and first derivative (velocity).
     double y, yPrime;
-
-    // Amplitude adjustment.
-    double amp;
 };
 
 static void DuffingOsc_next(DuffingOsc* unit, int inNumSamples);
 static void DuffingOsc_Ctor(DuffingOsc* unit);
 
 void ResetIntegration(DuffingOsc* unit) {
-    constexpr double stableAmpSquared = 0.5 * 0.5;
-
     unit->x = 0.0;
     unit->y = 0.0;
     unit->yPrime = 0.0;
-
-    double freq = static_cast<double>(IN0(0));
-    double damping = static_cast<double>(IN0(1));
-    double stiffness = static_cast<double>(IN0(2));
-    double nonLinearity = static_cast<double>(IN0(3));
-
-    double omega = 2.0 * M_PI * freq;
-    double innerA = (omega * omega) - stiffness - (3.0 * nonLinearity * stableAmpSquared / 4.0);
-    double innerB = damping * omega;
-    unit->amp = sqrt(((innerA * innerA) + (innerB * innerB)) * stableAmpSquared);
 }
 
 void DuffingOsc_Ctor(DuffingOsc* unit) {
-    unit->h = SAMPLEDUR;
+    // We calibrate the step size so that a 25 kHz oscillator has a 0.25 Hz frequency at the sampling rate.
+    unit->h = 25000.0 / (0.25 * SAMPLERATE);
     ResetIntegration(unit);
 
     SETCALC(DuffingOsc_next);
@@ -93,7 +81,7 @@ void DuffingOsc_next(DuffingOsc* unit, int inNumSamples) {
     double nonLinearity = static_cast<double>(IN0(3));
     bool useAdvancedIntegrator = (IN0(5) != 0);
 
-    DuffingFunctor f(freq, unit->amp, damping, stiffness, nonLinearity);
+    DuffingFunctor f(freq, damping, stiffness, nonLinearity);
 
     double h = unit->h;
     double x = unit->x;
@@ -101,24 +89,54 @@ void DuffingOsc_next(DuffingOsc* unit, int inNumSamples) {
     double yPrime = unit->yPrime;
     double yNext, yPrimeNext, yHat, yHatPrime;
 
-    for (auto i = 0; i < inNumSamples; ++i) {
-        float out_i = static_cast<float>(y);
-        out[i] = zapgremlins(out_i);
+    // If statement is factored out of middle of loop to aid pipelining, but resulting in some redundant code.
+    if (useAdvancedIntegrator) {
+        constexpr double kMaxStep = 1.0 / 4.0;
+        int stepsPerSample = static_cast<int>(ceil(h / kMaxStep));
+        double step = h > kMaxStep ? h / ceil(h / kMaxStep) : h;
 
-        if (useAdvancedIntegrator) {
-            egSC::SharpFineRKNG8<DuffingFunctor>(f, h, x, y, yPrime, yNext, yPrimeNext, yHat, yHatPrime);
-        } else {
-            egSC::LinearIntegrator<DuffingFunctor>(f, h, x, y, yPrime, yNext, yPrimeNext);
+        for (auto i = 0; i < inNumSamples; ++i) {
+            float out_i = static_cast<float>(y);
+            out[i] = zapgremlins(out_i);
+
+            for (auto j = 0; j < stepsPerSample; ++j) {
+                egSC::SharpFineRKNG8<DuffingFunctor>(f, step, x, y, yPrime, yNext, yPrimeNext, yHat, yHatPrime);
+
+                x += step;
+
+                if (isnan(yNext) || isnan(yPrimeNext)) {
+                    x = 0.0;
+                    y = 0.0;
+                    yPrime = 0.0;
+                } else {
+                    y = yNext;
+                    yPrime = yPrimeNext;
+                }
+            }
         }
+    } else {
+        constexpr double kMaxStep = 1.0 / 2.0;
+        int stepsPerSample = static_cast<int>(ceil(h / kMaxStep));
+        double step = h > kMaxStep ? h / ceil(h / kMaxStep) : h;
 
-        if (isnan(yNext) || isnan(yPrimeNext)) {
-            x = 0.0;
-            y = 0.0;
-            yPrime = 0.0;
-        } else {
-            x += h;
-            y = yNext;
-            yPrime = yPrimeNext;
+        for (auto i = 0; i < inNumSamples; ++i) {
+            float out_i = static_cast<float>(y);
+            out[i] = zapgremlins(out_i);
+
+            for (auto j = 0; j < stepsPerSample; ++j) {
+                egSC::LinearIntegrator<DuffingFunctor>(f, step, x, y, yPrime, yNext, yPrimeNext);
+
+                x += step;
+
+                if (isnan(yNext) || isnan(yPrimeNext)) {
+                    x = 0.0;
+                    y = 0.0;
+                    yPrime = 0.0;
+                } else {
+                    y = yNext;
+                    yPrime = yPrimeNext;
+                }
+            }
         }
     }
 
