@@ -38,7 +38,7 @@ The degree of nonlinearity in the spring response. Larger numbers indicate highe
 ARGUMENT:: reset
 A trigger argument, for nonzero values at control rate the UGen will reset the simulation.
 
-ARGUMENT:: useAdvancedIterator
+ARGUMENT:: useAdvancedIntegrator
 If nonzero the UGen will use the Sharp and Fine integrator, which is roughly emphasis::ten times:: more computationally expensive than the simple linear integrator.
 
 EXAMPLES::
