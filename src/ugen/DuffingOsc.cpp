@@ -1,6 +1,11 @@
 // Duffing Oscillator implementation, after:
-// <ref>
-
+//
+// https://en.wikipedia.org/wiki/Duffing_equation
+//
+// And inspired by the brilliant work of Tom Mudd
+//
+// https://entracte.co.uk/projects/tom-mudd-e226/
+//
 #include "LinearIntegrator.hpp"
 #include "SharpFineRKNG8.hpp"
 
@@ -105,7 +110,7 @@ void DuffingOsc_next(DuffingOsc* unit, int inNumSamples) {
         if (useAdvancedIntegrator) {
             egSC::SharpFineRKNG8<DuffingFunctor>(f, h, x, y, yPrime, yNext, yPrimeNext, yHat, yHatPrime);
         } else {
-            egSC::LinearIntegrator(f, h, x, y, yPrime, yNext, yPrimeNext);
+            egSC::LinearIntegrator<DuffingFunctor>(f, h, x, y, yPrime, yNext, yPrimeNext);
         }
 
         if (isnan(yNext) || isnan(yPrimeNext)) {
