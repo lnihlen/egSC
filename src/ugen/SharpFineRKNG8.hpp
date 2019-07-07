@@ -1,11 +1,14 @@
-#ifndef SRC_SHARP_FINE_RKNG_8_H_
-#define SRC_SHARP_FINE_RKNG_8_H_
+#ifndef SRC_UGEN_SHARP_FINE_RKNG_8_HPP_
+#define SRC_UGEN_SHARP_FINE_RKNG_8_HPP_
 
 namespace egSC {
 
+// General second-order ODE integration solver, after:
+// "Sharp, P.W. and J.M. Fine, Some Nystrom pairs for the general second-order initial-value problem, Journal of
+//  Computational and Applied Mathematics 42 (1992) 279-291"
 template<typename ODE>
-void SharpFineRKNG8(const ODE& f, const double h, const double x, const double y, const double yPrime,
-    double& yOut, double& yPrimeOut, double& yHatOut, double& yHatPrimeOut) {
+void SharpFineRKNG8(const ODE& f, const double h, const double x, const double y, const double yPrime, double& yOut,
+    double& yPrimeOut, double& yHatOut, double& yHatPrimeOut) {
     constexpr double a_21 = 1.0 / 200.0;
 
     constexpr double a_31 = 14.0 / 2187.0;
@@ -153,4 +156,4 @@ void SharpFineRKNG8(const ODE& f, const double h, const double x, const double y
 
 }    // namespace egSC
 
-#endif    // SRC_SHARP_FINE_RKNG_8_H_
+#endif    // SRC_UGEN_SHARP_FINE_RKNG_8_HPP_

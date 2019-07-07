@@ -11,7 +11,7 @@ d2y/dt2 = amp * cos(omega * t) - (damping * dy/dt) - (stiffness * y) - (nonLinea
 
 The amplitude adjustment is calculated automatically at reset time based on the other input frequencies to produce a peak-to-peak steady state amplitude of 1.0, assuming constant frequency.
 
-Because the oscillator is chaotic a more computationally expensive numeric method is implemented to simulate it, see "Sharp, P.W. and J.M. Fine, Some Nystrom pairs for the general second-order initial-value problem, Journal of Computational and Applied Mathematics 42 (1992) 279-291". But there are still cases where the oscillator will produce non-numeric results, in which case it will reset automatically, potentially resulting in an audible pop.
+Because the oscillator is chaotic a more computationally expensive numeric method can be used to simulate it, see "Sharp, P.W. and J.M. Fine, Some Nystrom pairs for the general second-order initial-value problem, Journal of Computational and Applied Mathematics 42 (1992) 279-291". But there are still cases where the oscillator will produce non-numeric results, in which case it will reset automatically, potentially resulting in an audible pop. The advanced iterator can be activated and deactivated at control rate
 
 note::
 DuffingOsc is unstable and emphasis::will:: produce values with absolute value > 1, and can have signficant DC bias. If directly driving a speaker with DuffingOSC consider using both LeakDC and a Limiter.
@@ -37,6 +37,9 @@ The degree of nonlinearity in the spring response. Larger numbers indicate highe
 
 ARGUMENT:: reset
 A trigger argument, for nonzero values at control rate the UGen will reset the simulation.
+
+ARGUMENT:: useAdvancedIterator
+If nonzero the UGen will use the Sharp and Fine integrator, which is roughly emphasis::ten times:: more computationally expensive than the simple linear integrator.
 
 EXAMPLES::
 

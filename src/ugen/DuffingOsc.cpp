@@ -1,6 +1,7 @@
 // Duffing Oscillator implementation, after:
 // <ref>
 
+#include "LinearIntegrator.hpp"
 #include "SharpFineRKNG8.hpp"
 
 #include "SC_PlugIn.h"
@@ -87,6 +88,7 @@ void DuffingOsc_next(DuffingOsc* unit, int inNumSamples) {
     double damping = static_cast<double>(IN0(1));
     double stiffness = static_cast<double>(IN0(2));
     double nonLinearity = static_cast<double>(IN0(3));
+    bool useAdvancedIntegrator = (IN0(5) != 0);
 
     DuffingFunctor f(freq, unit->amp, damping, stiffness, nonLinearity);
 
@@ -100,8 +102,11 @@ void DuffingOsc_next(DuffingOsc* unit, int inNumSamples) {
         float out_i = static_cast<float>(y);
         out[i] = zapgremlins(out_i);
 
-        egSC::SharpFineRKNG8<DuffingFunctor>(f, h, x, y, yPrime, yNext, yPrimeNext, yHat, yHatPrime);
-
+        if (useAdvancedIntegrator) {
+            egSC::SharpFineRKNG8<DuffingFunctor>(f, h, x, y, yPrime, yNext, yPrimeNext, yHat, yHatPrime);
+        } else {
+            egSC::LinearIntegrator(f, h, x, y, yPrime, yNext, yPrimeNext);
+        }
 
         if (isnan(yNext) || isnan(yPrimeNext)) {
             x = 0.0;
