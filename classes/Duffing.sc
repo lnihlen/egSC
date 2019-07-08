@@ -6,6 +6,6 @@ DuffingOsc : UGen {
 
 DuffingExt : UGen {
 	*ar { |in, damping = 0.1, stiffness = 0.5, nonLinearity = 0.5|
-		^this.multiNew('audio', in, damping, stiffness, nonLinearity)
+		^this.multiNew('audio', in, damping, stiffness, nonLinearity);
 	}
 }
