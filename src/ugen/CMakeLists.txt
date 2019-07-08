@@ -2,7 +2,8 @@
 # CMakeLists.txt, credit to those authors.
 
 set(egSCUGen_files
-    DuffingOsc.cpp
+    Duffing.cpp
+    LinearIntegrator.hpp
     SharpFineRKNG8.hpp
 )
 
