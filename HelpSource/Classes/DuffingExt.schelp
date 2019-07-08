@@ -1,0 +1,41 @@
+TITLE:: DuffingExt
+summary:: Chaotic oscillator with external driver, based on the Duffing function.
+categories:: Undocumented classes, UGens>Undocumented
+related:: Classes/DuffingOsc
+
+DESCRIPTION::
+A chaotic oscillating sound generator based on integration of the Duffing function:
+
+code::
+d2y/dt2 = amp * cos(omega * t) - (damping * dy/dt) - (stiffness * y) - (nonLinearity * y * y * y)
+::
+
+But in this instance the typical driving cosine function is replaced with an aribtrary audio rate input. For the traditional sinsusodal input see link::Classes/DuffingOsc::.
+
+CLASSMETHODS::
+
+METHOD:: ar
+All inputs but the driver input are sampled at control rate. The driver input is sampled at audio rate.
+
+ARGUMENT:: in
+The driver input.
+
+ARGUMENT:: damping
+Amount of resistance to velocity in the spring.
+
+ARGUMENT:: stiffness
+How much force the spring responds to with linear compression.
+
+ARGUMENT:: nonLinearity
+The degree of nonlinearity in the spring response. Larger numbers indicate higher nonlinearity, and 0 makes a purely linear spring. Can be negative.
+
+
+EXAMPLES::
+
+code::
+(
+{
+	DuffingExt.ar(DuffingOsc.ar(220));
+}.play;
+)
+::
