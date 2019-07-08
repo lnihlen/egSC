@@ -19,6 +19,8 @@ struct DuffingOsc : public Unit {
     // Integrator step size per sample, kept so that sampling the oscillator at audio frequencies doesn't require huge
     // adjustments to the gain across the audio range.
     double h;
+    int stepsPerSample;
+    double step;
 
     // Tracks time relative to instantaneous frequency for the driving oscillator.
     double phase;
@@ -28,7 +30,7 @@ struct DuffingOsc : public Unit {
 };
 
 struct DuffingExt : public Unit {
-    double samplePeriod;
+    int stepsPerSample;
     double y, yPrime;
     float lastSample;
 };
@@ -50,6 +52,14 @@ void DuffingOsc_Ctor(DuffingOsc* unit) {
     // We calibrate the step size so that a 25 kHz oscillator has a 0.25 Hz frequency when simulated with this step size
     // at the sampling rate. This is the same as multiplying the simulation time by 100K.
     unit->h = 100000.0 / SAMPLERATE;
+
+    // Numerical instability results for step sizes larger than this, but as this gets smaller the cost of the
+    // compute per sample goes up, so the step size is derived experimentally to be as large as possible while
+    // still stable.
+    constexpr double kMaxStep = 1.0 / 2.0;
+    unit->stepsPerSample = static_cast<int>(ceil(unit->h / kMaxStep));
+    unit->step = unit->h > kMaxStep ? h / ceil(h / kMaxStep) : h;
+
     unit->phase = 0.0;
     unit->y = 0.0;
     unit->yPrime = 0.0;
@@ -89,6 +99,8 @@ void DuffingOsc_next(DuffingOsc* unit, int inNumSamples) {
     DuffingOscFunctor f((2.0 * M_PI * freq) / 100000.0, amp, damping, stiffness, nonLinearity);
 
     double h = unit->h;
+    int stepsPerSample = unit->stepsPerSample;
+    double step = unit->step;
     double x = unit->phase;
     double y = unit->y;
     double yPrime = unit->yPrime;
@@ -98,13 +110,6 @@ void DuffingOsc_next(DuffingOsc* unit, int inNumSamples) {
     while (x >= angularPeriod) {
         x -= angularPeriod;
     }
-
-    // Numerical instability results for step sizes larger than this, but as this gets smaller the cost of the
-    // compute per sample goes up, so the step size is derived experimentally to be as large as possible while
-    // still stable.
-    constexpr double kMaxStep = 1.0 / 2.0;
-    int stepsPerSample = static_cast<int>(ceil(h / kMaxStep));
-    double step = h > kMaxStep ? h / ceil(h / kMaxStep) : h;
 
     for (auto i = 0; i < inNumSamples; ++i) {
         float out_i = static_cast<float>(y);
@@ -137,20 +142,24 @@ struct DuffingExtFunctor {
     DuffingExtFunctor(double damping, double stiffness, double nonLinearity)  :
         m_Damping(damping),
         m_Stiffness(stiffness),
-        m_NonLinearity(nonLinearity) {
+        m_NonLinearity(nonLinearity),
+        m_Driver(0.0) {
     }
 
     double operator()(double x, double y, double yPrime) const {
-        return 2.0;
+        return m_Driver - (m_Damping * yPrime) - (m_Stiffness * y) - (m_NonLinearity * y * y * y);
     }
 
     double m_Damping;
     double m_Stiffness;
     double m_NonLinearity;
+    double m_Driver;
 };
 
 void DuffingExt_Ctor(DuffingExt* unit) {
-    uint->samplePeriod = SAMPLEPERIOD * 100000.0;
+    double samplePeriod = SAMPLEPERIOD * 100000.0;
+    constexpr double kMaxStep = 1.0 / 2.0;
+    unit->stepsPerSample = static_cast<int>(ceil(samplePeriod / kMaxStep));
     unit->y = 0.0;
     unit->yPrime = 0.0;
     unit->lastSample = 0.0f;
@@ -160,5 +169,15 @@ void DuffingExt_Ctor(DuffingExt* unit) {
 
 void DuffingExt_next(DuffingExt* unit, int inNumSamples) {
     float* out = OUT(0);
+
+    float* in = IN(0);
+    double damping = static_cast<double>(IN0(1));
+    double stiffness = static_cast<double>(IN0(2));
+    double nonLinearity = static_cast<double>(IN0(3));
+
+    for (auto i = 0; i < inNumSamples; ++i) {
+    }
+
+
 }
 
