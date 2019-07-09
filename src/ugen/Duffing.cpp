@@ -52,7 +52,7 @@ PluginLoad(Duffing) {
 void DuffingOsc_Ctor(DuffingOsc* unit) {
     // We calibrate the step size so that a 25 kHz oscillator has a 0.25 Hz frequency when simulated with this step size
     // at the sampling rate. This is the same as multiplying the simulation time by 100K.
-    unit->h = 100000.0 / SAMPLERATE;
+    unit->h = SAMPLEDUR * 100000.0;
 
     // Numerical instability results for step sizes larger than this, but as this gets smaller the cost of the
     // compute per sample goes up, so the step size is derived experimentally to be as large as possible while

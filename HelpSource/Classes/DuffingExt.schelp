@@ -27,8 +27,7 @@ ARGUMENT:: stiffness
 How much force the spring responds to with linear compression.
 
 ARGUMENT:: nonLinearity
-The degree of nonlinearity in the spring response. Larger numbers indicate higher nonlinearity, and 0 makes a purely linear spring. Can be negative.
-
+The degree of nonlinearity in the spring response. Larger numbers indicate higher nonlinearity, and 0 makes a purely linear spring.
 
 EXAMPLES::
 

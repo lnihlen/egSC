@@ -1,6 +1,7 @@
 TITLE:: DuffingOsc
 summary:: Chaotic driven oscillator based on the Duffing function.
 categories:: UGens>Generators>Chaotic
+related:: Classes/DuffingExt
 
 DESCRIPTION::
 A chaotic oscillating sound generator based on integration of the Duffing function:
@@ -21,7 +22,7 @@ ARGUMENT:: amp
 Amplitude of driving oscillator (so amp in the above equation).
 
 ARGUMENT:: damping
-Amount of resistance to velociy in the spring.
+Amount of resistance to velocity in the spring.
 
 ARGUMENT:: stiffness
 How much force the spring responds to with linear compression.
